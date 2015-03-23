@@ -1,24 +1,40 @@
 import java.util.Random;
 
 public class Process{
-
-	
 	int[] possibleMemory = {5,1,17,31};
 	//name of the process
-	private char name;
+	protected char name;
 	//time which process runs
-	private int duration;
+	protected int duration;
 	//process's memory capacity
-	private int memory;
+	protected int memory;
 	
 	//constructor
-	public Process(){
+	public Process(int name){
 		Random rand = new Random();
 		//generate random name, duration, memory
-		int nameTemp = rand.nextInt(91) + 65;
-		this.name = String.valueOf(nameTemp).charAt(0);
+		this.name = (char) name;
 		this.duration = rand.nextInt(6) + 1;
 		this.memory = possibleMemory[rand.nextInt(4)];
+	}
+	
+	//return process name
+	public char getProcessName(){
+		return name;
+	}
+	
+	//set process name
+	public void setProcessname(char name){
+		this.name = name;
+	}
+	//return process duration
+	public int getDuration(){
+		return duration;
+	}
+	
+	//return process memory capacity
+	public int getMemory(){
+		return memory;
 	}
 	
 	//print process
