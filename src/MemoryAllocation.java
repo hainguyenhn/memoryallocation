@@ -106,30 +106,68 @@ public class MemoryAllocation {
 		return (MainMemory < currentUsage);
 	}
 
-	//implement first fit algorithm
+	//firstfit
 	public void firstFit(){
+		firstFitnextFit(0);
+	}
+	
+	//bestfit
+	public void bestFit(){
+		firstFitnextFit(1);
+	}
+	
+	//implement first fit and next fit
+	//0 for first fit, 1 for next fit
+	public void firstFitnextFit(int input){
+		boolean firstFit = false;
+		//check input 
+		if(input == 0){
+			firstFit = true;
+			System.out.println("First Fit Algorithm is running.");
+		}
+		else{
+			System.out.println("Next Fit Algorithm is running.");
+		}
+		
+		//start search position
+		int startPos = 0;
+		
+		int numSwappedIn = 0;
 		int currentTime = 0;
 		while(currentTime < time){
 			if(!processQueue.isEmpty()){
 				if(currentTime != 0){
 					decrementTime(currentTime);
 				}
+	
 				//check for space
-				int[] result = checkSpace(0,processQueue.peek().getMemory());
+				int[] result = checkSpace(startPos,processQueue.peek().getMemory());
 				//if there are spaces in memory for required process
 				if(result[0] != -1){
+					//update start search pos
+					if(firstFit == false){
+						startPos = result[0];
+					}
+					
 					Process temp = processQueue.pop();
 					char name = temp.getProcessName();
-					String tempName = "Process " + name + " is added.";
+					numSwappedIn++;
+					String tempName = "\nProcess " + name + " is added.";
 					replace(result,temp);
 					print(currentTime, tempName);
 				}
+				//no space available
 				else{
-					System.out.println("\n No space left");
+					if(firstFit == false){
+						startPos = 0;
+					}
+					String noSpace = "\n No space left";
+					print(currentTime, noSpace);
 				}
 			}
 			currentTime++;
 		}
+		System.out.println("\n"+ numSwappedIn + " were swapped in First Fit.");
 	}
 
 	//check space
@@ -146,7 +184,6 @@ public class MemoryAllocation {
 					}
 					empty[1] = segmentQueue.get(i).getProcess().getMemory();
 					empty[2]++;
-					System.out.println("\nFound segment " + empty[0] + "space found "  + empty[1] + " and required " + empty[2]);
 					return empty;
 				}
 				else{
@@ -157,7 +194,6 @@ public class MemoryAllocation {
 					empty[1] += segmentQueue.get(i).getProcess().getMemory();
 					empty[2]++;
 					if(empty[1] >= space){
-						System.out.println("\nFound segment " + empty[0] + "space found "  + empty[1] + " and required " + empty[2]);
 						return empty;
 					}
 				}
@@ -169,7 +205,6 @@ public class MemoryAllocation {
 				empty[2] = 0;
 			}
 		}
-		System.out.println("\nFound segment " + empty[0] + "space found "  + empty[1] + " and required " + empty[2]);
 		//if not enough space
 		if(empty[1] < space){
 			empty[0] = -1;
@@ -238,13 +273,12 @@ public class MemoryAllocation {
 		Process[] list = new Process[numProcess];
 		for(int i = 0; i < numProcess; i++){
 			list[i] = new Process(i+65);
-			System.out.print(list[i].getProcessName()+"-");
-			System.out.print(list[i].getMemory() +"-");
-			System.out.print(list[i].getDuration());
-			System.out.println();
 		}
 
-		MemoryAllocation mem = new MemoryAllocation(list);
-		mem.firstFit();
+		MemoryAllocation firstFitTest = new MemoryAllocation(list);
+		//firstFitTest.firstFit();
+		MemoryAllocation bestFitTest = new MemoryAllocation(list);
+		bestFitTest.bestFit();
+		
 	}
 }
